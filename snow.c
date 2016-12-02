@@ -15,6 +15,7 @@ typedef struct _flake {
 	int spriteindex;
 	int age;
 	struct _flake * next;
+	struct _flake * prev;
 } flake;
 
 // Unicode characters to use as sprites
@@ -44,6 +45,7 @@ void append_flake(flake * head, int x, int y, int spriteindex, int age) {
 	current->next->spriteindex = spriteindex;
 	current->next->age = age;
 	current->next->next = NULL;
+	current->next->prev = current;
 }
 
 void draw_flakes(flake * head) {
@@ -57,29 +59,38 @@ void draw_flakes(flake * head) {
 void update_flakes(flake ** head) {
 	if(*head == NULL) return;
 
-	/* Check if we need to remove the first item */
-	if((*head)->age < 1) {
-		free(*head);
-		*head = (*head)->next;
-	}
-
+	/* Move the flake and update it's age */
 	flake * current = *head;
-	flake * previous = NULL;
-
 	while(current->next != NULL) {
 		if(current->age > 0) {
 			current->age--;
 			current->y++;
-		} else {
-			/* Destroy the object, it's dead to us */
-			if(previous != NULL) {
-				previous->next = current->next;
-				free(current);
-				current = current->next;
-			}
 		}
-		previous = current;
 		current = current->next;
+	}
+}
+
+void remove_dead(flake ** head) {
+	flake * current = *head;
+
+	while(current->next != NULL) {
+		if(current->age < 1) {
+			flake * temp = NULL;
+			temp = current;
+
+			if(temp->prev != NULL) {
+				temp->prev->next = temp->next;
+			} else {
+				temp->next->prev = NULL;
+				/* Set the new head of the list */
+				*head = temp->next;
+			}
+
+			current = temp->next;
+			free(temp);
+		} else {
+			current = current->next;
+		}
 	}
 }
 
@@ -116,10 +127,12 @@ int main(void)
 	getmaxyx(stdscr, maxy, maxx);
 	max_age = maxy;
 
-	// Init linked list of flakes
+	/* Init linked list of flakes with a single one to start with */
 	head = malloc(sizeof(flake));
 	if(head == NULL) return 1;
+	head->x = rand() / (RAND_MAX / maxx + 1);
 	head->age = max_age;
+	head->prev = NULL;
 
 	// Main animation loop that exits when ESC is pressed
 	while(getch() != 27)
@@ -130,10 +143,12 @@ int main(void)
 
 		/* Move existing flakes */
 		update_flakes(&head);
+		remove_dead(&head);
 		flake_count = count_list(head);
 
-		/* Generate some new flakes */
+		/* Generate some new flakes if we aren't at the max */
 		if(flake_count < MAX_FLAKES) {
+			/* Get random number between min and max per tick */
 			flakes_to_make = MIN_FLAKES_PER_TICK + rand() / (RAND_MAX / (MAX_FLAKES_PER_TICK - MIN_FLAKES_PER_TICK + 1) + 1);
 			if(flake_count + flakes_to_make > MAX_FLAKES)
 				flakes_to_make = MAX_FLAKES - flake_count;
