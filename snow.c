@@ -50,7 +50,6 @@ void draw_flakes(flake * head) {
 	flake * current = head;
 	while(current->next != NULL) {
 		mvaddwstr(current->y, current->x, sprite[current->spriteindex]);
-		/* mvaddwstr(y, x, sprite[0]); */
 		current = current->next;
 	}
 }

@@ -9,7 +9,7 @@ TARGET=snow
 all: $(TARGET)
 
 $(TARGET): $(TARGET).c
-	$(CC) $(CFLAGS) $(LIBS) -o $(TARGET) $(TARGET).c
+	$(CC) -o $(TARGET) $(TARGET).c $(CFLAGS) $(LIBS) 
 
 .PHONY : clean
 clean:
