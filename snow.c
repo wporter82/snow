@@ -106,13 +106,24 @@ int count_list(flake * head) {
 	return count;
 }
 
+void cleanup(flake ** head) {
+	flake * current = *head;
+	flake * temp = NULL;
+
+	while(current != NULL) {
+		temp = current;
+		current = current->next;
+		free(temp);
+	}
+	free(*head);
+}
+
 int main(void)
 {
 	int maxy;
 	int maxx;
 	int flake_count = 0;
 	int flakes_to_make = 0;
-	int max_age;
 	flake * head = NULL;
 
 	// Init curses
@@ -125,21 +136,16 @@ int main(void)
 	timeout(REFRESH_RATE); /* Block on getch() to pause animation */
 
 	getmaxyx(stdscr, maxy, maxx);
-	max_age = maxy;
 
 	/* Init linked list of flakes with a single one to start with */
 	head = malloc(sizeof(flake));
 	if(head == NULL) return 1;
-	head->x = rand() / (RAND_MAX / maxx + 1);
-	head->age = max_age;
-	head->prev = NULL;
 
 	// Main animation loop that exits when ESC is pressed
 	while(getch() != 27)
 	{
 		/* Update if screen size changes */
 		getmaxyx(stdscr, maxy, maxx);
-		max_age = maxy;
 
 		/* Move existing flakes */
 		update_flakes(&head);
@@ -148,18 +154,20 @@ int main(void)
 
 		/* Generate some new flakes if we aren't at the max */
 		if(flake_count < MAX_FLAKES) {
+			int x;
+
 			/* Get random number between min and max per tick */
 			flakes_to_make = MIN_FLAKES_PER_TICK + rand() / (RAND_MAX / (MAX_FLAKES_PER_TICK - MIN_FLAKES_PER_TICK + 1) + 1);
 			if(flake_count + flakes_to_make > MAX_FLAKES)
 				flakes_to_make = MAX_FLAKES - flake_count;
-			int x;
+
 			for(x = 0; x < flakes_to_make; x++) {
 				/* Get random location for x */
 				int randx = rand() / (RAND_MAX / maxx + 1);
 				/* Get random sprite */
 				int spritenum = rand() / (RAND_MAX / num_sprites + 1);
 				/* Add flake to the list */
-				append_flake(head, randx, 0, spritenum, max_age);
+				append_flake(head, randx, 0, spritenum, maxy);
 			}
 		}
 
@@ -168,6 +176,7 @@ int main(void)
 		refresh();
 	}
 
+	cleanup(&head); /* Cleanup particle system */
 	endwin(); /* Cleanup curses */
 
 	return 0;
