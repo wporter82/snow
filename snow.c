@@ -115,7 +115,7 @@ void cleanup(flake ** head) {
 		current = current->next;
 		free(temp);
 	}
-	free(*head);
+	free(current);
 }
 
 int main(void)
