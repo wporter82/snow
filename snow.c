@@ -106,16 +106,13 @@ int count_list(flake * head) {
 	return count;
 }
 
-void cleanup(flake ** head) {
-	flake * current = *head;
-	flake * temp = NULL;
-
-	while(current != NULL) {
-		temp = current;
-		current = current->next;
-		free(temp);
+void cleanup(flake *head) {
+	flake *current = NULL;
+	while((current = head) != NULL) {
+		head = head->next;
+		free(current);
 	}
-	free(current);
+
 }
 
 int main(void)
@@ -176,7 +173,7 @@ int main(void)
 		refresh();
 	}
 
-	cleanup(&head); /* Cleanup particle system */
+	cleanup(head); /* Cleanup particle system */
 	endwin(); /* Cleanup curses */
 
 	return 0;
