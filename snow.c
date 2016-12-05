@@ -56,17 +56,17 @@ void draw_flakes(flake * head) {
 	}
 }
 
-void update_flakes(flake ** head) {
-	if(*head == NULL) return;
+void update_flakes(flake *head) {
+	if(head == NULL) return;
 
 	/* Move the flake and update it's age */
-	flake * current = *head;
-	while(current->next != NULL) {
-		if(current->age > 0) {
-			current->age--;
-			current->y++;
+	flake * current = NULL;
+	while((current = head) != NULL) {
+		if(head->age > 0) {
+			head->age--;
+			head->y++;
 		}
-		current = current->next;
+		head = head->next;
 	}
 }
 
@@ -94,13 +94,13 @@ void remove_dead(flake ** head) {
 	}
 }
 
-int count_list(flake * head) {
-	flake * current = head;
+int count_list(flake *head) {
+	flake *current = NULL;
 	int count = 0;
 
-	while(current->next != NULL) {
+	while((current = head) != NULL) {
 		count++;
-		current = current->next;
+		head = head->next;
 	}
 
 	return count;
@@ -145,7 +145,7 @@ int main(void)
 		getmaxyx(stdscr, maxy, maxx);
 
 		/* Move existing flakes */
-		update_flakes(&head);
+		update_flakes(head);
 		remove_dead(&head);
 		flake_count = count_list(head);
 
