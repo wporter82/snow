@@ -1,12 +1,12 @@
 CC=gcc
-# Debug
-# CFLAGS=-Wall -g -O0 -DDEBUG
-# Release
-CFLAGS=-Wall -O2 -DNDEBUG
+CFLAGS=-Wall
 LIBS=-lncursesw
 TARGET=snow
 
 all: $(TARGET)
+
+debug: CFLAGS += -DDEBUG -g
+debug: $(TARGET)
 
 $(TARGET): $(TARGET).c
 	$(CC) -o $(TARGET) $(TARGET).c $(CFLAGS) $(LIBS) 
