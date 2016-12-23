@@ -5,7 +5,7 @@ TARGET=snow
 
 all: $(TARGET)
 
-debug: CFLAGS += -DDEBUG -g
+debug: CFLAGS += -DDEBUG -ggdb3
 debug: $(TARGET)
 
 $(TARGET): $(TARGET).c

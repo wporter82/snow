@@ -112,6 +112,7 @@ void cleanup(flake *head) {
 		head = head->next;
 		free(current);
 	}
+	free(head);
 
 }
 
