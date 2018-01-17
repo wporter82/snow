@@ -2,6 +2,7 @@
 #include <ncursesw/ncurses.h>
 #include <locale.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define REFRESH_RATE 60 /* milliseconds to wait for input */
 #define MAX_FLAKES 200
@@ -212,6 +213,9 @@ int main(void)
 	flake* head = NULL;
 	callback draw = draw_flake;
 	callback update = update_flake;
+
+	// Init RNG
+	srand(time(NULL));
 
 	// Init curses
 	setlocale(LC_ALL, ""); /* Enable using all unicode characters */
