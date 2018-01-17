@@ -7,6 +7,7 @@
 #define MAX_FLAKES 200
 #define MIN_FLAKES_PER_TICK 0
 #define MAX_FLAKES_PER_TICK 5
+#define MAX_SPEED 2
 
 // Linked list of flakes
 typedef struct flake {
@@ -14,6 +15,7 @@ typedef struct flake {
 	int y;
 	int spriteindex;
 	int age;
+	int speed;
 	struct flake* next;
 } flake;
 
@@ -34,7 +36,7 @@ const wchar_t* sprite[8] = {
 
 const int num_sprites = sizeof(sprite) / sizeof(sprite[0]);
 
-flake* create(int x, int y, int spriteindex, int age, flake* next) {
+flake* create(int x, int y, int spriteindex, int age, int speed, flake* next) {
 	flake* new_flake = (flake*)malloc(sizeof(flake));
 	if(new_flake == NULL) {
 		printf("Error creating a new flake.\n");
@@ -44,18 +46,19 @@ flake* create(int x, int y, int spriteindex, int age, flake* next) {
 	new_flake->y = y;
 	new_flake->spriteindex = spriteindex;
 	new_flake->age = age;
+	new_flake->speed = speed;
 	new_flake->next = next;
 
 	return new_flake;
 }
 
-flake* prepend(flake* head, int x, int y, int spriteindex, int age) {
-	flake* new_flake = create(x,y,spriteindex,age,head);
+flake* prepend(flake* head, int x, int y, int spriteindex, int age, int speed) {
+	flake* new_flake = create(x, y, spriteindex, age, speed, head);
 	head = new_flake;
 	return head;
 }
 
-flake* append(flake* head, int x, int y, int spriteindex, int age) {
+flake* append(flake* head, int x, int y, int spriteindex, int age, int speed) {
 	/* Get to the end of the list */
 	flake* cursor = head;
 	while(cursor->next != NULL) {
@@ -63,7 +66,7 @@ flake* append(flake* head, int x, int y, int spriteindex, int age) {
 	}
 
 	/* Create a new flake */
-	flake* new_flake = create(x,y,spriteindex,age,NULL);
+	flake* new_flake = create(x, y, spriteindex, age, speed, NULL);
 	cursor->next = new_flake;
 
 	return head;
@@ -192,8 +195,8 @@ void update_flake(flake* fl) {
 	if(fl != NULL) {
 		/* move the flake */
 		if(fl->age > 0) {
-			fl->age--;
-			fl->y++;
+			fl->age = fl->age - fl->speed;
+			fl->y = fl->y + fl->speed;
 		}
 	}
 }
@@ -224,7 +227,7 @@ int main(void)
 	/* Init linked list of flakes with a single one to start with */
 	head = (flake*)malloc(sizeof(flake));
 	if(head == NULL) return 1;
-	head = create(0,0,0,maxy,NULL);
+	head = create(0, 0, 0, maxy, 1, NULL);
 
 	// Main animation loop that exits when ESC is pressed
 	while(getch() != 27)
@@ -251,8 +254,10 @@ int main(void)
 				int randx = rand() / (RAND_MAX / maxx + 1);
 				/* Get random sprite */
 				int spritenum = rand() / (RAND_MAX / num_sprites + 1);
+				/* Get random speed */
+				int speed = (rand() / (RAND_MAX / MAX_SPEED + 1) + 1);
 				/* Add flake to the list */
-				head = create(randx, 0, spritenum, maxy, head);
+				head = append(head, randx, 0, spritenum, maxy, speed);
 			}
 		}
 
