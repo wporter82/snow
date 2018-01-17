@@ -134,7 +134,7 @@ flake* remove_any(flake* head, flake* node) {
 	return head;
 }
 
-void dispose(flake *head) {
+void cleanup(flake *head) {
 	flake *cursor, *tmp;
 
 	if(head != NULL) {
@@ -180,16 +180,6 @@ int count(flake* head) {
 		cursor = cursor->next;
 	}
 	return count;
-}
-
-void cleanup(flake *head) {
-	flake *current = NULL;
-	while((current = head) != NULL) {
-		head = head->next;
-		free(current);
-	}
-	free(head);
-
 }
 
 void draw_flake(flake* fl) {
