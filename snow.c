@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#include <ncursesw/ncurses.h>
+#include <ncurses.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <time.h>
@@ -24,15 +24,15 @@ typedef struct flake {
 typedef void (*callback)(flake* data);
 
 // Unicode characters to use as sprites
-const wchar_t* sprite[8] = {
-	L"\u2744",
-	L"\u2745",
-	L"\u2746",
-	L"\u2747",
-	L"\u2748",
-	L"\u2749",
-	L"\u274A",
-	L"\u274B"
+const char * sprite[8] = {
+	"\u2744",
+	"\u2745",
+	"\u2746",
+	"\u2747",
+	"\u2748",
+	"\u2749",
+	"\u274A",
+	"\u274B"
 };
 
 const int num_sprites = sizeof(sprite) / sizeof(sprite[0]);
@@ -188,7 +188,7 @@ int count(flake* head) {
 
 void draw_flake(flake* fl) {
 	if(fl != NULL)
-		mvaddwstr(fl->y, fl->x, sprite[fl->spriteindex]);
+		mvaddstr(fl->y, fl->x, sprite[fl->spriteindex]);
 		 
 }
 
@@ -265,7 +265,7 @@ int main(void)
 			}
 		}
 
-		clear();
+		werase(stdscr);
 		traverse(head, draw);
 		refresh();
 	}

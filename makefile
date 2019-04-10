@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall
 CFLAGS+=-std=c99
-LDLIBS=-lncursesw
+LDLIBS=-lncurses
 TARGET=snow
 
 all: $(TARGET)
